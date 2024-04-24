@@ -1,0 +1,9 @@
+@import "bootstrap";
+
+.spinner-border {
+    display: none;
+}
+
+#get-url.loading .spinner-border {
+    display: inline-block;
+}
