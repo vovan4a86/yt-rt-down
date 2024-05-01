@@ -21,22 +21,19 @@ class PageController extends Controller
 
         $process = new Process(array('yt-dlp',
             '--print',
-            '%(title)s',
+            '"%(title)s"',
             $url
         ));
 
-//        Debugbar::log($process);
-//        return ['success' => true];
-//        $process->run();
+        $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
-        $newString = mb_convert_encoding([
+        return response()->json([
             'success' => true,
-            'text' => $process->getOutput(),
-        ], "UTF-8", "auto");
-        return response()->json(['success' => true, 'text' => $newString]);
+            'text' => $process->getOutput()
+        ]);
     }
 
     public function getFile() {
@@ -97,7 +94,7 @@ class PageController extends Controller
                         public_path('/output/') . $new_filename);
                     $dot_index = mb_strrpos($new_filename, '.');
                     $ext = mb_substr($new_filename, $dot_index);
-                    $thumb = '/output/' . $name . $ext;
+                    $thumb = '/output/' . $new_filename;
                 }
             }
         }
@@ -109,10 +106,13 @@ class PageController extends Controller
             'thumb' => $thumb,
             'webp' => $webp
         ], "UTF-8", "auto");
+        Debugbar::log($newString);
         return response()->json($newString);
     }
 
     public function deleteFiles() {
         array_map("unlink", glob(public_path('/output/*.*')));
+
+        return ['success' => true];
     }
 }

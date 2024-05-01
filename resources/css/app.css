@@ -7,3 +7,7 @@
 #get-url.loading .spinner-border {
     display: inline-block;
 }
+
+.spinner-grow.text-warning.disabled {
+    display: none;
+}

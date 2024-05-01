@@ -24,18 +24,24 @@
         <div class="tab-pane fade show active" id="pills-yt"
              role="tabpanel" aria-labelledby="pills-yt-tab">
             <input type="text" class="form-control d-block my-3" id="yt"
-                   data-type="yt" placeholder="youtube ссылка" value="https://youtu.be/k9Lzmx_Rflg?si=KTC6AQaXNxOt1efK">
+                   data-type="yt" placeholder="youtube ссылка"
+                   value="">
         </div>
 
         <div class="tab-pane fade" id="pills-rt"
              role="tabpanel" aria-labelledby="pills-rt-tab">
             <input type="text" class="form-control d-block my-3" id="rt"
+                   value=""
                    data-type="rt" placeholder="rutube ссылка">
         </div>
     </div>
     <div id="error" class="text-danger mb-2"></div>
-    <div id="name" class="text-success"></div>
-    <div class="d-flex justify-content-between">
+    <div id="name" class="text-success">
+        <div class="spinner-grow text-warning spinner-grow-sm disabled" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between mt-2">
         <button class="btn btn-success" id="get-url" type="button" disabled>
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Получить файл
@@ -44,7 +50,7 @@
         </button>
     </div>
 
-    <div id="res" class="text-center text-lg-start"></div>
+    <div id="res" class="text-center mt-3"></div>
 
 @endsection
 

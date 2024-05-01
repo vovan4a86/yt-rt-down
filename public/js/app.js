@@ -2142,22 +2142,22 @@ function sendAjax(url, data, callback, type) {
   });
 }
 var url;
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').click(function () {
-  alert('ok');
-});
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('#clear').click(function () {
-  sendAjax('/delete-fiels', {}, function () {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#yt').empty();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#rt').empty();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').empty();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#name').empty();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error').empty();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', true);
+  sendAjax('/delete-files', {}, function (json) {
+    if (json.success) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#yt').empty();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#rt').empty();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').empty();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#name').empty();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error').empty();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', true);
+    } else {
+      console.error('Ошибка!');
+    }
   });
 });
 
-//  https://youtu.be/k9Lzmx_Rflg?si=KTC6AQaXNxOt1efK
-
+//ввели youtube ссылку
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('#yt').change(function () {
   var value = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val();
   var link = value.startsWith("https://youtu.be/");
@@ -2177,15 +2177,32 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('#yt').change(function () {
   }
   getNameFromUrl();
 });
+
+//ввели rutube ссылку
+jquery__WEBPACK_IMPORTED_MODULE_0___default()('#rt').change(function () {
+  var value = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val();
+  var link = value.startsWith("https://rutube.ru/");
+  if (!link) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#error').html('Некорректная ссылка');
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', true);
+    return;
+  } else {
+    url = value;
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', false);
+  }
+  getNameFromUrl();
+});
 var getNameFromUrl = function getNameFromUrl() {
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').addClass('loading');
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner-grow.text-warning').removeClass('disabled');
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', true);
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').empty();
   sendAjax('/get-name', {
     url: url
   }, function (json) {
     if (json.success && json.text) {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', false);
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#name').html(json.text);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').attr('disabled', false);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner-grow.text-warning').addClass('disabled');
     } else {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#name').html('Не удалось получить имя.');
     }
@@ -2193,29 +2210,26 @@ var getNameFromUrl = function getNameFromUrl() {
 };
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('#get-url').click(function () {
   var btn = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
-  btn.text('Скачивание...');
   btn.attr('disabled', true);
   btn.addClass('loading');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').empty();
   sendAjax('/get-file', {
     url: url
   }, function (json) {
+    btn.attr('disabled', true);
+    btn.removeClass('loading');
     if (json.success) {
-      btn.attr('disabled', true);
-      btn.text('Получить файл');
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#name').empty();
       var img = '';
       if (json.webp) {
-        img = "\n                      <picture>\n                      <source type=\"image/webp\" srcset=\"".concat(json.thumb, "\">\n                      <img class=\"d-block mx-auto mx-lg-0\" src=\"").concat(json.thumb, "\"\n                           width=\"360\" height=\"203\" style=\"border-radius: 12px;\" alt=\"cover\">\n                      </picture>");
+        img = "\n                      <picture>\n                      <source type=\"image/webp\" srcset=\"".concat(json.thumb, "\">\n                      <img class=\"d-inline mx-auto\" src=\"").concat(json.thumb, "\"\n                           width=\"360\" height=\"203\" style=\"border-radius: 12px;\" alt=\"cover\">\n                      </picture>");
       } else {
-        img = "\n                    <img class=\"d-block\" src=\"".concat(json.thumb, "\"\n                         width=\"360\" height=\"203\" style=\"border-radius: 12px;\" alt=\"cover\">");
+        img = "\n                    <img class=\"d-inline mx-auto\" src=\"".concat(json.thumb, "\"\n                         width=\"360\" height=\"203\" style=\"border-radius: 12px;\" alt=\"cover\">");
       }
       var download = "<div class=\"mt-2 text-white\">".concat(json.name, "</div>\n                          <a href=\"").concat(json.file, "\" type=\"audio/mp3\" download class=\"btn btn-success mt-2 btn-lg\">\u0421\u043A\u0430\u0447\u0430\u0442\u044C</a>");
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').append(img);
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').append(download);
     } else {
-      btn.attr('disabled', true);
-      btn.text('Получить файл');
       var error = "\n                   <div class=\"text-danger\">\n                     <p>Error!</p>\n                     <p class=\"text-info\">".concat(json.error, "</p>\n                   </div>\n            ");
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#res').append(error);
     }

@@ -9759,3 +9759,7 @@ a.text-dark:hover, a.text-dark:focus {
     display: inline-block;
 }
 
+.spinner-grow.text-warning.disabled {
+    display: none;
+}
+

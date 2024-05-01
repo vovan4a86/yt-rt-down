@@ -26,23 +26,22 @@ function sendAjax(url, data, callback, type){
 
 let url;
 
-$('#get-url').click(function () {
-    alert('ok');
-})
-
 $('#clear').click(function () {
-    sendAjax('/delete-fiels', {}, function (){
-        $('#yt').empty();
-        $('#rt').empty();
-        $('#res').empty();
-        $('#name').empty();
-        $('#error').empty();
-        $('#get-url').attr('disabled', true);
+    sendAjax('/delete-files', {}, function (json){
+        if(json.success) {
+            $('#yt').empty();
+            $('#rt').empty();
+            $('#res').empty();
+            $('#name').empty();
+            $('#error').empty();
+            $('#get-url').attr('disabled', true);
+        } else {
+            console.error('Ошибка!');
+        }
     });
 })
 
-//  https://youtu.be/k9Lzmx_Rflg?si=KTC6AQaXNxOt1efK
-
+//ввели youtube ссылку
 $('#yt').change(function (){
     const value = $(this).val();
     const link = value.startsWith("https://youtu.be/");
@@ -64,13 +63,31 @@ $('#yt').change(function (){
     getNameFromUrl();
 })
 
+//ввели rutube ссылку
+$('#rt').change(function (){
+    const value = $(this).val();
+    const link = value.startsWith("https://rutube.ru/");
+
+    if (!link) {
+        $('#error').html('Некорректная ссылка');
+        $('#get-url').attr('disabled', true);
+        return;
+    } else {
+        url = value;
+        $('#get-url').attr('disabled', false);
+    }
+    getNameFromUrl();
+})
+
 const getNameFromUrl = () => {
-    $('#get-url').addClass('loading');
+    $('.spinner-grow.text-warning').removeClass('disabled');
+    $('#get-url').attr('disabled', true);
     $('#res').empty();
     sendAjax('/get-name', {url}, function (json) {
         if (json.success && json.text) {
-            $('#get-url').attr('disabled', false);
             $('#name').html(json.text);
+            $('#get-url').attr('disabled', false);
+            $('.spinner-grow.text-warning').addClass('disabled');
         } else {
             $('#name').html('Не удалось получить имя.');
         }
@@ -79,26 +96,26 @@ const getNameFromUrl = () => {
 
 $('#get-url').click(function () {
     let btn = $(this);
-    btn.text('Скачивание...');
     btn.attr('disabled', true);
     btn.addClass('loading');
     $('#res').empty();
     sendAjax('/get-file', {url}, function (json) {
+        btn.attr('disabled', true);
+        btn.removeClass('loading');
+
         if (json.success) {
-            btn.attr('disabled', true);
-            btn.text('Получить файл');
             $('#name').empty();
             let img = '';
             if (json.webp) {
                 img = `
                       <picture>
                       <source type="image/webp" srcset="${json.thumb}">
-                      <img class="d-block mx-auto mx-lg-0" src="${json.thumb}"
+                      <img class="d-inline mx-auto" src="${json.thumb}"
                            width="360" height="203" style="border-radius: 12px;" alt="cover">
                       </picture>`;
             } else {
                 img = `
-                    <img class="d-block" src="${json.thumb}"
+                    <img class="d-inline mx-auto" src="${json.thumb}"
                          width="360" height="203" style="border-radius: 12px;" alt="cover">`;
             }
             const download = `<div class="mt-2 text-white">${json.name}</div>
@@ -107,8 +124,6 @@ $('#get-url').click(function () {
             $('#res').append(download);
 
         } else {
-            btn.attr('disabled', true);
-            btn.text('Получить файл');
             const error = `
                    <div class="text-danger">
                      <p>Error!</p>
