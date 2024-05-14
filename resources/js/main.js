@@ -29,8 +29,8 @@ let url;
 $('#clear').click(function () {
     sendAjax('/delete-files', {}, function (json){
         if(json.success) {
-            $('#yt').empty();
-            $('#rt').empty();
+            $('#yt').val('');
+            $('#rt').val('');
             $('#res').empty();
             $('#name').empty();
             $('#error').empty();

@@ -3,7 +3,7 @@
 @section('title', 'Скачать аудио с YT/RT')
 
 @section('content')
-    <h1 class="mt-3 text-center">Скачать аудио:</h1>
+    <h1 class="mt-3 text-center">Скачать Аудио:</h1>
     <div class="mb-3 mt-3">
 
     </div>
